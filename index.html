@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Matrimonial Portfolio</title>
+    <!--
+      Tailwind CSS is pulled from the official CDN. It provides utility
+      classes for layout, spacing, typography and responsiveness. Using
+      the CDN keeps this project self‑contained without the need for
+      additional build steps. See https://tailwindcss.com/docs for
+      documentation on the available classes.
+    -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!--
+      React and ReactDOM are loaded from a CDN. The development builds
+      include helpful warnings and error messages. When deploying to
+      production you can switch these for the minified builds if
+      desired. See https://react.dev for more information.
+    -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <!--
+      Babel is used to transpile JSX on the fly in the browser. It
+      supports modern JavaScript syntax and JSX without a build tool.
+      While this slows down initial load a bit, it keeps the example
+      simple and self‑contained. For a production application you
+      should precompile your JS using a bundler like Vite or Webpack.
+    -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Custom styles to hide scrollbars on elements with the no-scrollbar class -->
+    <style>
+      /* Hide scrollbar for Chrome, Safari and Opera */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      /* Hide scrollbar for IE, Edge and Firefox */
+      .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen font-sans">
+    <!--
+      The root element where React will mount the application. All of
+      your components are rendered into this container.
+    -->
+    <div id="root"></div>
+    <!--
+      The main application script. It's declared as type "text/babel"
+      which tells Babel to transpile the code on the fly. For a
+      production application you should compile this file ahead of
+      time.
+    -->
+    <!--
+      The application code is embedded directly below. It is marked
+      as type="text/babel" so that Babel will transpile the JSX at
+      runtime. For maintainability the same code also lives in
+      app.js; if you modify one, be sure to update the other.
+    -->
+    <script type="text/babel" data-presets="env,react">
+// This revised React application constructs a matrimonial profile page
+// similar to the Jeevansathi layout.  The UI is organised into
+// three columns on desktop (profile/basic details on the left,
+// scrollable content in the centre, and an album grid on the right)
+// while collapsing into a single column on mobile.  A fixed header
+// displays the invocation text and stays visible when scrolling.  On
+// small screens the album grid is hidden.
+
+const { useState } = React;
+
+// Component: ImageWithSkeleton
+// Displays a skeleton placeholder until the image has fully loaded.  The
+// skeleton uses a grey pulse animation provided by Tailwind's
+// `animate-pulse` utility.  When the image fires its onLoad event the
+// skeleton fades out and the actual image becomes visible.  An
+// optional className can be passed in to control sizing.
+function ImageWithSkeleton({ src, alt = '', className = '', imageClassName = '' }) {
+  /*
+    Show a grey pulsating placeholder until the image finishes
+    loading.  The skeleton is positioned behind the image (z-0)
+    while the image sits above it (z-10).  This ensures that any
+    overlay controls such as navigation arrows are not obscured by
+    the placeholder.  Once loaded we remove the opacity class on
+    the image so it becomes visible.
+  */
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className={`relative ${className}`}>
+      {!loaded && (
+        <div className="absolute inset-0 bg-gray-300 animate-pulse rounded z-0"></div>
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className={
+          'h-full w-full ' +
+          (imageClassName || 'object-cover') +
+          (loaded ? '' : ' opacity-0') +
+          ' relative z-10'
+        }
+        onLoad={() => setLoaded(true)}
+        /*
+          If the image fails to load (e.g. incorrect path or missing file),
+          trigger onError to hide the skeleton overlay.  Without this the
+          skeleton would remain visible indefinitely on error.
+        */
+        onError={() => setLoaded(true)}
+      />
+    </div>
+  );
+}
+
+// Component: ProfileCard
+// Displays the user's profile picture (placeholder), first name and
+// a link to view the album.  An optional onViewAlbum handler can be
+// passed in to scroll to the album grid.
+function ProfileCard({ name, onViewAlbum, onViewProfile, onOpenKundli, profileImage }) {
+  return (
+    <div className="bg-white rounded-lg shadow p-4 flex flex-row z-5 md:flex-col items-center gap-4 relative">
+      {/* Astrology icon at top right */}
+      <button
+        className="absolute top-2 right-2"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (onOpenKundli) onOpenKundli();
+        }}
+        aria-label="Match kundli"
+      >
+        {/* Astrology icon */}
+        <img
+          src="assets/kundli_icon.png"
+          alt="Kundli icon"
+          className="h-8 w-8 object-contain"
+        />
+      </button>
+      <div
+        className="flex-shrink-0 h-28 w-28 rounded-full overflow-hidden cursor-pointer"
+        onClick={() => {
+          onViewProfile && onViewProfile();
+        }}
+      >
+        {/* Profile picture with skeleton */}
+        {/* When no profileImage is supplied this will fall back to the avatar outline below */}
+        {profileImage ? (
+          <ImageWithSkeleton
+            src={profileImage}
+            alt={name}
+            className="h-full w-full object-cover rounded-full"
+          />
+        ) : (
+          <div className="h-full w-full bg-gray-200 flex items-center justify-center text-gray-500">
+            <svg className="h-14 w-14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
+              <path d="M12 14c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z" />
+            </svg>
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col md:items-center flex-1">
+        <h1 className="text-lg md:text-xl font-semibold text-gray-800 mb-1 text-left md:text-center">
+          {name}
+        </h1>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            onViewAlbum && onViewAlbum();
+          }}
+          className="text-rose-400 text-sm font-medium flex items-center gap-1 hover:underline focus:outline-none"
+        >
+          <span>View album</span>
+          <span aria-hidden="true">📷</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Component: BasicDetailsCard
+// Shows basic details like DOB, height, community, rasi, gotra and blood group
+// with simple emoji icons for better aesthetics.
+function BasicDetailsCard({ details }) {
+  // Map keys to icons
+  // Icons for each field.  A genealogical tree icon (🌳) is used for
+  // Gotra to better convey ancestry.  Location and diet fields have
+  // explicit icons.  Age reuses the birthday cake emoji to indicate
+  // the passage of years rather than a specific date of birth.
+    const icons = {
+    age: '🎂',
+    height: '📏',
+    community: '🧘',
+    rasi: '♈',
+    gotra: '🧬',
+    location: '📍',
+    diet: '🍗',
+    blood: '🩸'
+  };
+  return (
+    <div className="bg-white mt-2 rounded-lg shadow">
+      <h3 className="bg-rose-100 text-gray-900 font-semibold px-4 py-3 rounded-t w-full">Basic Info</h3>
+      <ul className="px-4 py-3 space-y-2 text-gray-800 text-sm">
+        {/* Age replaces the date of birth.  The same cake icon is used to represent a birthday. */}
+        {details.age && (
+          <li className="flex items-center gap-2">
+            <span className="text-lg">{icons.age}</span>
+            <span><span className="font-semibold">Age:</span> {details.age}</span>
+          </li>
+        )}
+        <li className="flex items-center gap-2">
+          <span className="text-lg">{icons.height}</span>
+          <span><span className="font-semibold">Height:</span> {details.height}</span>
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="text-lg">{icons.community}</span>
+          <span><span className="font-semibold">Community:</span> {details.community}</span>
+        </li>
+        {/* Only show rasi if provided.  In the latest requirements the rasi field
+           has been removed from the basic details, so this list item is
+           conditionally rendered. */}
+        {details.rasi && (
+          <li className="flex items-center gap-2">
+            <span className="text-lg">{icons.rasi}</span>
+            <span><span className="font-semibold">Rasi:</span> {details.rasi}</span>
+          </li>
+        )}
+        <li className="flex items-center gap-2">
+          <span className="text-lg">{icons.gotra}</span>
+          <span><span className="font-semibold">Gotra:</span> {details.gotra}</span>
+        </li>
+        {/* Location and diet preference are additional fields requested by the user. */}
+        {details.location && (
+          <li className="flex items-center gap-2">
+            <span className="text-lg">{icons.location}</span>
+            <span><span className="font-semibold">Location:</span> {details.location}</span>
+          </li>
+        )}
+        {details.diet && (
+          <li className="flex items-center gap-2">
+            <span className="text-lg">{icons.diet}</span>
+            <span><span className="font-semibold">Diet Preference:</span> {details.diet}</span>
+          </li>
+        )}
+        <li className="flex items-center gap-2">
+          <span className="text-lg">{icons.blood}</span>
+          <span><span className="font-semibold">Blood Group:</span> {details.bloodGroup}</span>
+        </li>
+      </ul>
+    </div>
+  );
+}
+
+// Generic card wrapper for main section.
+function SectionCard({ title, children }) {
+  return (
+    <div className="bg-white mt-2 rounded-lg shadow">
+      <h3 className="bg-rose-100 text-gray-900 font-semibold px-4 py-3 rounded-t w-full">{title}</h3>
+      <div className="px-4 py-3 text-gray-800 text-sm space-y-2">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Album grid for the right section.  Displays 12 placeholders
+// labelled “Album 1”, “Album 2”, etc.  You can substitute real
+// images by replacing the divs with <img> tags.
+function AlbumGrid({ images, onSelect }) {
+  return (
+    <div className="bg-white mt-2 rounded-lg shadow">
+      <h3 className="bg-rose-100 text-gray-900 font-semibold px-4 py-3 rounded-t w-full">Album</h3>
+      <div className="p-4 grid grid-cols-3 sm:grid-cols-3 gap-2">
+        {images.map((src, idx) => (
+          <div
+            key={idx}
+            className="border border-gray-200 rounded-lg h-20 w-full overflow-hidden cursor-pointer"
+            onClick={() => onSelect && onSelect(idx)}
+          >
+            <ImageWithSkeleton
+              src={src}
+              alt={`Album ${idx + 1}`}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// AlbumModal component renders a modal overlay that can display
+// either a single image with navigation controls or a grid of
+// thumbnails.  It is controlled via the isOpen prop; images is an
+// array of URLs; currentIndex sets the initial image; onClose
+// closes the modal.  The modal loops around when navigating past
+// the last image.
+function AlbumModal({ isOpen, images, currentIndex, onClose }) {
+  const [mode, setMode] = React.useState('single');
+  const [index, setIndex] = React.useState(currentIndex || 0);
+
+  // Sync state when opening the modal or changing the selected index
+  React.useEffect(() => {
+    if (isOpen) {
+      setMode('single');
+      setIndex(currentIndex || 0);
+    }
+  }, [isOpen, currentIndex]);
+
+  if (!isOpen) return null;
+
+  const handlePrev = () => {
+    setIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+  const handleNext = () => {
+    setIndex((prev) => (prev + 1) % images.length);
+  };
+  const openGrid = () => setMode('grid');
+  const openSingle = (idx) => {
+    setIndex(idx);
+    setMode('single');
+  };
+
+  const totalCount = images.length;
+
+  // Simple SVG icons for navigation.  Using outline style with
+  // stroke to match the required aesthetic.  The chevron paths are
+  // sourced from Heroicons (MIT licensed) but embedded directly to
+  // avoid external dependencies.
+  const ChevronLeftIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className="h-6 w-6"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+    </svg>
+  );
+  const ChevronRightIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className="h-6 w-6"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+    </svg>
+  );
+  // Grid icon: simple 3×3 grid symbol.  Use consistent sizing
+  // with the close icon.
+  const GridIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+      className="h-6 w-6"
+    >
+      <path d="M3 3h5v5H3V3zm0 8h5v5H3v-5zm0 8h5v5H3v-5zm8-16h5v5h-5V3zm0 8h5v5h-5v-5zm0 8h5v5h-5v-5zm8-16h5v5h-5V3zm0 8h5v5h-5v-5zm0 8h5v5h-5v-5z" />
+    </svg>
+  );
+  // Close icon: X mark with thicker stroke and size similar to grid icon.
+  const CloseIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2.5}
+      stroke="currentColor"
+      className="h-8 w-8"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  );
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+      {mode === 'single' ? (
+        <div className="relative max-w-4xl w-full max-h-[80vh] bg-white rounded-lg flex flex-col">
+          {/* Header: centre the photo counter and align actions to the right. */}
+          <div className="flex items-center bg-rose-100 px-4 py-2 rounded-t-lg">
+            <span className="flex-1 text-center text-gray-600 font-medium text-sm">
+              {index + 1}/{totalCount}
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={openGrid}
+                className="p-2 text-gray-700 hover:bg-rose-200 rounded"
+                aria-label="Show grid"
+              >
+                {GridIcon}
+              </button>
+              <button
+                onClick={() => onClose()}
+                className="p-2 text-gray-700 hover:bg-rose-200 rounded"
+                aria-label="Close"
+              >
+                {CloseIcon}
+              </button>
+            </div>
+          </div>
+          {/* Body: image with navigation arrows always visible */}
+          <div className="flex-1 relative flex items-center justify-center p-0">
+            <button
+              onClick={handlePrev}
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-rose-50/60 text-gray-700 rounded-full p-2 hover:bg-rose-100 z-20"
+              aria-label="Previous"
+            >
+              {ChevronLeftIcon}
+            </button>
+            <div className="max-h-[70vh] max-w-full flex items-center justify-center">
+              <ImageWithSkeleton
+                src={images[index]}
+                alt={`Album ${index + 1}`}
+                className="max-h-[70vh] max-w-full"
+                imageClassName="object-contain"
+              />
+            </div>
+            <button
+              onClick={handleNext}
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-rose-50/60 text-gray-700 rounded-full p-2 hover:bg-rose-100 z-20"
+              aria-label="Next"
+            >
+              {ChevronRightIcon}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="relative max-w-4xl w-full max-h-[80vh] bg-white rounded-lg flex flex-col">
+          {/* Header in grid view: actions aligned right */}
+          <div className="flex items-center justify-end bg-rose-100 px-4 py-2 rounded-t-lg gap-2">
+            <button
+              onClick={() => setMode('single')}
+              className="p-2 text-gray-700 hover:bg-rose-200 rounded"
+              aria-label="Back to single view"
+            >
+              {GridIcon}
+            </button>
+            <button
+              onClick={() => onClose()}
+              className="p-2 text-gray-700 hover:bg-rose-200 rounded"
+              aria-label="Close"
+            >
+              {CloseIcon}
+            </button>
+          </div>
+          {/* Grid body: taller portrait cells and increased top margin */}
+          <div className="flex-1 overflow-auto p-4 grid grid-cols-3 sm:grid-cols-3 gap-2 mt-8 rounded-b-lg">
+            {images.map((src, idx) => (
+              <div
+                key={idx}
+                className="w-full h-48 sm:h-56 cursor-pointer"
+                onClick={() => openSingle(idx)}
+              >
+                <ImageWithSkeleton
+                  src={src}
+                  alt={`Album ${idx + 1}`}
+                  className="h-full w-full"
+                  imageClassName="object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ProfileModal displays a larger view of the profile picture with
+// only a close button.  It uses the same placeholder avatar
+// graphics as ProfileCard.  When closed, onClose is called.
+function ProfileModal({ isOpen, onClose, image }) {
+  if (!isOpen) return null;
+  // Use same colour scheme as album modal for consistency
+  const CloseIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2.5}
+      stroke="currentColor"
+      className="h-6 w-6"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  );
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+      <div className="relative max-w-lg w-full max-h-[80vh] bg-rose-50 rounded-lg flex flex-col">
+        {/* Header with close */}
+        <div className="flex justify-end items-center bg-rose-100 px-4 py-2 rounded-t-lg">
+          <button
+            onClick={() => onClose()}
+            className="p-1 text-gray-600 hover:bg-rose-200 rounded"
+            aria-label="Close"
+          >
+            {CloseIcon}
+          </button>
+        </div>
+        <div className="flex-1 flex items-center justify-center p-6">
+          {image ? (
+            <ImageWithSkeleton
+              src={image}
+              alt="Profile"
+              className="max-h-[60vh] max-w-full rounded-full"
+              imageClassName="object-contain rounded-full"
+            />
+          ) : (
+            <div className="h-80 w-80 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+              <svg className="h-32 w-32" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
+                <path d="M12 14c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z" />
+              </svg>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// KundliModal prompts the user for the bride's birth details and
+// displays a match result.  When the Match button is clicked the
+// provided onMatch callback is invoked with the collected data
+// (name, dob, time, place).  While waiting for a result a
+// spinner and "matching..." text is shown.  Once a result is
+// available it is displayed along with a Close button.  The modal
+// resets its internal state each time it is opened.
+function KundliModal({ isOpen, onClose, onMatch }) {
+  const initialState = { name: '', dob: '', time: '', place: '' };
+  const [form, setForm] = React.useState(initialState);
+  const [loading, setLoading] = React.useState(false);
+  const [result, setResult] = React.useState(null);
+
+  // Reset fields when opening or closing
+  React.useEffect(() => {
+    if (isOpen) {
+      setForm(initialState);
+      setLoading(false);
+      setResult(null);
+    }
+  }, [isOpen]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Only submit if all fields filled
+    if (!form.name || !form.dob || !form.time || !form.place) return;
+    setLoading(true);
+    try {
+      const res = await onMatch({ ...form });
+      setResult(res);
+    } catch (err) {
+      setResult({ score: 0, message: 'Unable to compute match' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  // Simple loading spinner SVG
+  const Spinner = (
+    <svg className="animate-spin h-6 w-6 text-gray-600" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+    </svg>
+  );
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+      <div className="relative max-w-lg w-full max-h-[90vh] bg-white rounded-lg flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between bg-rose-100 px-4 py-2 rounded-t-lg">
+          <h3 className="text-gray-800 font-semibold text-base">{result ? 'Match Result' : "Enter Bride's Detail"}</h3>
+          <button
+            onClick={() => onClose()}
+            className="p-2 text-gray-700 hover:bg-rose-200 rounded"
+            aria-label="Close"
+          >
+            {/* Close icon */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="h-6 w-6"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        {/* Body */}
+        <div className="flex-1 overflow-auto p-4 space-y-4">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center h-full">
+              {Spinner}
+              <p className="mt-2 text-gray-700">matching ...</p>
+            </div>
+          ) : result ? (
+            <div className="text-center space-y-4">
+              <p className="text-gray-700 text-lg font-semibold">
+                Match Score: {result.score}/36
+              </p>
+              <p className="text-gray-600 text-base">{result.message}</p>
+              <button
+                onClick={() => onClose()}
+                className="mt-4 bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded"
+              >
+                Close
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="bride-name">Name*</label>
+                <input
+                  type="text"
+                  id="bride-name"
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  placeholder="Enter name"
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-rose-400"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="bride-dob">Date of Birth*</label>
+                <input
+                  type="date"
+                  id="bride-dob"
+                  name="dob"
+                  value={form.dob}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-rose-400"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="bride-time">Time of Birth*</label>
+                <input
+                  type="time"
+                  id="bride-time"
+                  name="time"
+                  value={form.time}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-rose-400"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="bride-place">Birth Place*</label>
+                <input
+                  type="text"
+                  id="bride-place"
+                  name="place"
+                  value={form.place}
+                  onChange={handleChange}
+                  placeholder="Enter place of birth"
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-rose-400"
+                  required
+                />
+              </div>
+              <div className="flex justify-center">
+                <button
+                  type="submit"
+                  className="bg-rose-400 hover:bg-rose-500 text-white px-4 py-2 rounded"
+                >
+                  Match Kundli
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// KundliModal allows users to input bride's details and match kundli
+// with the groom's data.  It shows a form with four fields and a
+// match button.  While matching it displays a spinner and after
+// completion shows the score and a message.  The actual matching
+// logic is delegated to the onMatch callback passed in from the
+// parent.  The groom's data is provided for completeness although
+// not displayed in the UI.
+/*
+  NOTE: The old KundliModal implementation has been removed to avoid
+  multiple definitions of the same component.  The application now
+  relies on a single, modern KundliModal defined above.  This stub
+  remains as a comment for reference and should not be interpreted
+  by the compiler.
+*/
+
+// Main App component
+function App() {
+  // Data pulled from the provided screenshots and some placeholder
+  // values.  Modify these as needed.
+  const profile = {
+    name: 'Soumya Ranjan Behera',
+    // Profile picture path.  The first image from the album is used as the profile photo.
+    image: 'assets/IMG_01.jpg'
+  };
+  // Compute age from the date of birth.  The age is calculated at
+  // runtime based on the current date.  If the birthday has not
+  // occurred yet this year, subtract one year.  This utility
+  // returns a number representing years.
+  function computeAge(dobString) {
+    const dob = new Date(dobString);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
+    return age;
+  }
+  const age = computeAge('1995-12-30');
+  const basic = {
+    // Age is shown instead of the date of birth.  The original DOB
+    // remains here for reference but is not displayed directly.
+    age: `${age} years`,
+    height: "5'11\" (180 cm)",
+    community: 'Hindu, Brahmin – Halua',
+    // Rasi and diet have been removed as per the latest instructions.
+    gotra: 'Kashyap',
+    location: 'Bengaluru',
+    bloodGroup: 'B+'
+  };
+  const aboutMe = `Hello! I'm Soumya Ranjan Behera. I completed my B.Tech from ITER and currently work as a software engineer. I enjoy exploring new technologies, travelling to new places, reading books and spending quality time with family. I believe in balancing tradition and modern values and I'm looking for a partner who shares a similar outlook on life.`;
+
+  // Extended about me text provided by the user.  The first
+  // paragraph describes personal qualities and values.  The
+  // second paragraph expresses expectations for a partner and shared
+  // interests.  Only the first paragraph is shown by default; the
+  // second is revealed when the user clicks “View more”.
+  const aboutMePart1 =
+    'I am an ambitious, mature, and understanding individual who values simplicity, honesty, and strong family bonds. I believe in balancing aspirations with responsibilities while striving for personal and professional growth.';
+  const aboutMePart2 =
+    'To me, a fulfilling relationship is built on empathy, mutual respect, and a shared vision for the future. I look forward to settling down with someone who is kind, family-oriented, and equally committed to building a life rooted in trust, love, and companionship. It would be wonderful if she shares my interest in travel and enjoys discovering new places together.';
+
+  // State to toggle the expanded view of the About Me section.  It
+  // starts collapsed (false).  When the user clicks “View more” the
+  // second paragraph is displayed and the toggle remains true.
+  const [aboutExpanded, setAboutExpanded] = React.useState(false);
+  const family = {
+    father: 'Nirakar Behera',
+    fatherOccupation: 'Govt. Headmaster (Retired)',
+    mother: 'Chandrakala Sahoo',
+    motherOccupation: 'Teacher',
+    siblings: '1',
+    description: 'We are a close-knit family who values education, culture and mutual respect.'
+  };
+  const career = {
+    degree: 'B.Tech in Electrical Engineering',
+    institute: 'Institute of Technical Education & Research (ITER), Bhubaneswar',
+    profession: 'Senior Software Engineer',
+    location: 'Benguluru',
+  };
+  const lifestyle = {
+    hobbies: 'Reading, Travelling, Music.',
+    interests: 'Gardening, Tavelling.',
+    food: 'Authentic Odia cuisine, light less oily & mildly spiced and non-vegetarian.'
+  };
+  const kundli = {
+    rasi: 'Mesh (Aries)',
+    nakshatra: 'Ashwini',
+    manglik: 'No',
+    dob: '30 DEC 1995',
+    birthTime: '11:27 PM',
+    birthPlace: 'Jajpur Town'
+  };
+  const contact = {
+    self: '9776786336',
+    father: '9777160360',
+    email: 'soumyaranjan1819@gmail.com'
+  };
+
+  // Array of photos sorted alphabetically.  These are served from
+  // the local assets directory.  If you add more files to
+  // `matrimonial-portfolio/assets` they should be appended here and
+  // sorted by filename.
+  const images = [
+    'assets/IMG_01.jpg',
+    'assets/IMG_03.jpg',
+    'assets/IMG_02.jpg',
+    'assets/IMG_04.jpg',
+    'assets/IMG_05.jpg',
+    'assets/IMG_10.jpg',
+    'assets/IMG_07.jpg',
+    'assets/IMG_08.jpg',
+    'assets/IMG_09.jpg',
+  ];
+
+  // State for controlling the album modal.  albumOpen toggles the
+  // visibility; albumIndex stores the currently selected image index.
+  const [albumOpen, setAlbumOpen] = React.useState(false);
+  const [albumIndex, setAlbumIndex] = React.useState(0);
+
+  // State to control profile picture popup
+  const [profileOpen, setProfileOpen] = React.useState(false);
+  const openProfile = () => setProfileOpen(true);
+  const closeProfile = () => setProfileOpen(false);
+
+  // State for Kundli matching modal
+  const [kundliOpen, setKundliOpen] = React.useState(false);
+  const openKundli = () => setKundliOpen(true);
+  const closeKundli = () => setKundliOpen(false);
+
+  // Handler to perform kundli matching.  It accepts the bride's
+  // details and returns a simulated compatibility score and
+  // message.  In a real application you could call an external
+  // astrology API here.  We use the user's own birth details from
+  // the existing data (basic.dob, kundli.birthTime, kundli.birthPlace).
+  // Deterministic Kundli match function.  To ensure consistent
+  // results for the same input, we compute a simple hash of the
+  // bride’s details (name, dob, time and place).  The resulting
+  // value is mapped into the range [18, 36] to represent the
+  // traditional Gun Milan score.  Messages are chosen based on
+  // the final score.  A small artificial delay is added to
+  // simulate network latency and allow the spinner to be visible.
+  const handleKundliMatch = async (bride) => {
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    await sleep(1200);
+    // Build a string from the input values and compute a simple
+    // checksum.  We lower‑case the string to avoid case sensitive
+    // differences.  The checksum is reduced modulo 19 to get a
+    // value between 0 and 18, then shifted by 18 to produce a
+    // score between 18 and 36.
+    const concat = `${bride.name || ''}${bride.dob || ''}${bride.time || ''}${bride.place || ''}`.toLowerCase();
+    let hash = 0;
+    for (let i = 0; i < concat.length; i++) {
+      hash = (hash + concat.charCodeAt(i)) % 19;
+    }
+    const score = 18 + hash;
+    let message;
+    if (score >= 30) {
+      message = 'Excellent compatibility. A match made in heaven!';
+    } else if (score >= 24) {
+      message = 'Very good compatibility. You complement each other well.';
+    } else if (score >= 18) {
+      message = 'Moderate compatibility. There will be challenges but love conquers all.';
+    } else {
+      message = 'Low compatibility. Proceed with caution.';
+    }
+    return { score, message };
+  };
+
+  const openAlbum = (index = 0) => {
+    setAlbumIndex(index);
+    setAlbumOpen(true);
+  };
+  const closeAlbum = () => {
+    setAlbumOpen(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Fixed header */}
+      <header className="fixed top-0 left-0 right-0 bg-white shadow z-10 py-4 text-center text-red-600 font-bold">
+        ॐ श्री गणपतये नमः
+      </header>
+      {/* Content area with increased top and bottom padding */}
+      <div className="pt-24 pb-7 px-4 max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row gap-2">
+          {/* Left column */}
+          <aside className="md:w-1/4 w-full flex flex-col gap-2">
+            <ProfileCard
+              name={profile.name}
+              onViewAlbum={() => openAlbum(0)}
+              onViewProfile={openProfile}
+              onOpenKundli={openKundli}
+              profileImage={profile.image}
+            />
+            <BasicDetailsCard details={basic} />
+          </aside>
+          {/* Middle scrollable column */}
+          <main className="md:w-1/2 w-full flex flex-col gap-2 md:flex-grow md:overflow-y-auto no-scrollbar pr-2">
+            {/* About Me section with expandable view.  By default only
+              the first paragraph is shown.  Clicking “View more”
+              reveals the second paragraph.  Once expanded the
+              button disappears. */}
+            <SectionCard title="About Me">
+              <div className="space-y-2">
+                <p>{aboutMePart1}</p>
+                {aboutExpanded && <p>{aboutMePart2}</p>}
+                {!aboutExpanded && (
+                  <button
+                    onClick={() => setAboutExpanded(true)}
+                    className="text-red-500 font-medium flex items-center gap-1 focus:outline-none"
+                  >
+                    View more
+                    <span className="text-sm">▼</span>
+                  </button>
+                )}
+              </div>
+            </SectionCard>
+
+            {/* Family section summarises parents’ occupations, sibling
+              information and family values.  Chips denote the type
+              of family and values.  A descriptive paragraph
+              concludes the section. */}
+            <SectionCard title="Family">
+              <div className="flex flex-wrap gap-2 mb-3 mt-1">
+                <span className="border border-gray-300 rounded-full px-3 py-1 text-xs bg-gray-100">Nuclear Family</span>
+                <span className="border border-gray-300 rounded-full px-3 py-1 text-xs bg-gray-100">Moderate values</span>
+              </div>
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2">
+                  <span><span className="font-semibold">Parents:</span> Father is {family.fatherOccupation} &amp; Mother is currently working as a {family.motherOccupation}.</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span><span className="font-semibold">Siblings:</span> 1 younger brother (Unmarried), working in Benguluru.</span>
+                </li>
+              </ul>
+              <p className="mt-2">We are a close-knit and progressive family from Keonjhar, with plans to settle in Bhubaneswar by mid-2026.</p>
+            </SectionCard>
+            <SectionCard title="Career & Education">
+              <ul className="space-y-2">
+                <li><strong>Degree:</strong> {career.degree}</li>
+                <li><strong>Institute:</strong> {career.institute}</li>
+                <li><strong>Profession:</strong> {career.profession}</li>
+                <li><strong>Location:</strong> {career.location}</li>
+              </ul>
+            </SectionCard>
+            <SectionCard title="Lifestyle & Interests">
+              <ul className="space-y-2">
+                <li><strong>Hobbies:</strong> {lifestyle.hobbies}</li>
+                <li><strong>Interests:</strong> {lifestyle.interests}</li>
+                <li><strong>Food Preference:</strong> {lifestyle.food}</li>
+              </ul>
+            </SectionCard>
+            <SectionCard title="Kundli & Astro">
+              {/* Show details and preview side by side on all screens.  The flex layout wraps if space is limited. */}
+              <div className="flex flex-row flex-wrap gap-4">
+                <ul className="space-y-2 flex-1 min-w-[60%]">
+                  <li><strong>DOB:</strong> {kundli.dob}</li>
+                  <li><strong>Birth Time:</strong> {kundli.birthTime}</li>
+                  <li><strong>Birth Place:</strong> {kundli.birthPlace}</li>
+                  <li><strong>Rasi:</strong> {kundli.rasi}</li>
+                  <li><strong>Nakshatra:</strong> {kundli.nakshatra}</li>
+                  <li><strong>Manglik:</strong> {kundli.manglik}</li>
+                </ul>
+                <div className="flex flex-col items-center justify-center flex-shrink-0 ">
+                  {/* Kundli preview image.  Clickable to open the PDF.*/}
+                  <a
+                    href="assets/kundli.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <ImageWithSkeleton
+                      src="assets/kundli_view.png"
+                      alt="Kundli Chart"
+                      className="w-20 h-auto"
+                      imageClassName="object-contain"
+                    />
+                    <span className="text-rose-400 hover:text-rose-500 text-sm font-medium mt-2">View Kundli</span>
+                  </a>
+                </div>
+              </div>
+            </SectionCard>
+            {/* Custom Contact Details card with WhatsApp link in the header */}
+            <div className="bg-white mt-2 rounded-lg shadow">
+              {/* Card header with title on the left and WhatsApp icon on the right */}
+              <div className="bg-rose-100 text-gray-900 font-semibold px-4 py-3 rounded-t w-full flex items-center justify-between">
+                <span>Contact Details</span>
+                <a
+                  href={`https://wa.me/${contact.self}?text=Hello%2C%20I%20just%20went%20through%20your%20matrimonial%20biodata%20and%20would%20like%20to%20connect.%20When%20would%20be%20a%20convenient%20time%20for%20us%20to%20talk%3F`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-600 hover:text-green-700"
+                  aria-label="Chat on WhatsApp"
+                >
+                  {/* WhatsApp icon */}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" />
+                  </svg>
+                </a>
+              </div>
+              {/* Card content */}
+              <div className="px-4 py-3 text-gray-800 text-sm space-y-2">
+                <ul className="space-y-2">
+                  <li><strong>Mobile (Self):</strong> {contact.self}</li>
+                  <li><strong>Mobile (Father):</strong> {contact.father}</li>
+                  <li><strong>Email:</strong> {contact.email}</li>
+                </ul>
+              </div>
+            </div>
+          </main>
+          {/* Right column: album grid (hidden on mobile) */}
+          <aside id="album-grid" className="md:w-1/4 hidden md:block">
+            <AlbumGrid images={images} onSelect={(idx) => openAlbum(idx)} />
+          </aside>
+        </div>
+      </div>
+      {/* Album modal */}
+      <AlbumModal
+        isOpen={albumOpen}
+        images={images}
+        currentIndex={albumIndex}
+        onClose={closeAlbum}
+      />
+
+      {/* Profile modal */}
+      <ProfileModal isOpen={profileOpen} onClose={closeProfile} image={profile.image} />
+
+      {/* Kundli matching modal */}
+      <KundliModal
+        isOpen={kundliOpen}
+        onClose={closeKundli}
+        onMatch={handleKundliMatch}
+      />
+
+      {/* Footer / watermark */}
+      {/* Decrease the top margin on the footer to reduce the gap by roughly 40% (mt-2 → mt-1) */}
+      <footer className="py-4 text-center mt-1 px-4">
+        <p className="text-gray-600 text-base font-semibold">Crafted with ❤ for a new beginning 👨🏻‍🤝‍👩🏻</p>
+        <p className="text-gray-500 text-sm mt-1">Designed &amp; Developed by <span className="font-medium">Soumya</span></p>
+        <p className="text-gray-400 text-xs mt-1 flex items-center justify-center gap-1 font-normal">
+          <span>For queries or collaborations, reach out at</span>
+          <a
+            href="https://www.linkedin.com/in/soumyaranjan1819/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline flex items-center"
+          >
+            {/* LinkedIn icon */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+              className="mr-1"
+            >
+              <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.475 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.525 16 0 15.487 0 14.854V1.146zM4.943 12.306v-5.3H2.542v5.3h2.401zM3.743 6.511c.837 0 1.356-.554 1.356-1.244-.015-.705-.519-1.244-1.34-1.244-.821 0-1.356.539-1.356 1.244 0 .69.519 1.244 1.324 1.244h.016zm4.247 5.795v-2.833c0-.152.011-.304.056-.412.122-.304.398-.62.863-.62.609 0 .852.469.852 1.158v2.707h2.401v-2.898c0-1.553-.83-2.27-1.937-2.27-.906 0-1.312.5-1.544.847h.015V6.999H8.132c.03.765 0 5.307 0 5.307h2.401z" />
+            </svg>
+            <span className="sr-only">LinkedIn</span>
+          </a>
+        </p>
+      </footer>
+    </div>
+  );
+}
+
+// Mount the app
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+  </body>
+</html>
