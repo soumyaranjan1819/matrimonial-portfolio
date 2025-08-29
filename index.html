@@ -324,10 +324,6 @@ function AlbumModal({ isOpen, images, currentIndex, onClose }) {
 
   const totalCount = images.length;
 
-  // Simple SVG icons for navigation.  Using outline style with
-  // stroke to match the required aesthetic.  The chevron paths are
-  // sourced from Heroicons (MIT licensed) but embedded directly to
-  // avoid external dependencies.
   const ChevronLeftIcon = (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -383,11 +379,11 @@ function AlbumModal({ isOpen, images, currentIndex, onClose }) {
       {mode === 'single' ? (
         <div className="relative max-w-4xl w-full max-h-[80vh] bg-white rounded-lg flex flex-col">
           {/* Header: centre the photo counter and align actions to the right. */}
-          <div className="flex items-center bg-rose-100 px-4 py-2 rounded-t-lg">
+          <div className="flex justify-center w-full items-center bg-rose-100 py-2 rounded-t-lg">
             <span className="flex-1 text-center text-gray-600 font-medium text-sm">
               {index + 1}/{totalCount}
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 pr-2">
               <button
                 onClick={openGrid}
                 className="p-2 text-gray-700 hover:bg-rose-200 rounded"
@@ -397,7 +393,7 @@ function AlbumModal({ isOpen, images, currentIndex, onClose }) {
               </button>
               <button
                 onClick={() => onClose()}
-                className="p-2 text-gray-700 hover:bg-rose-200 rounded"
+                className="p-1 text-gray-700 hover:bg-rose-200 rounded"
                 aria-label="Close"
               >
                 {CloseIcon}
