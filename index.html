@@ -760,11 +760,12 @@ function App() {
     degree: 'B.Tech in Electrical Engineering',
     institute: 'Institute of Technical Education & Research (ITER), Bhubaneswar',
     profession: 'Senior Software Engineer',
+    company: 'MSys Technologies',
     location: 'Benguluru',
   };
   const lifestyle = {
-    hobbies: 'Reading',
-    interests: 'Gardening, Tavelling',
+    hobbies: 'Tech',
+    interests: 'Tavelling, Photography, Gardening.',
     food: 'Authentic Odia cuisine, Healthy snacking & non-vegetarian.'
   };
   const kundli = {
@@ -924,13 +925,13 @@ function App() {
               <ul className="space-y-2">
                 <li><strong>Degree:</strong> {career.degree}</li>
                 <li><strong>Institute:</strong> {career.institute}</li>
-                <li><strong>Profession:</strong> {career.profession}</li>
+                <li><strong>Profession:</strong> {career.profession} at {career.company}</li>
                 <li><strong>Location:</strong> {career.location}</li>
               </ul>
             </SectionCard>
             <SectionCard title="Lifestyle & Interests">
               <ul className="space-y-2">
-                <li><strong>Hobbies:</strong> {lifestyle.hobbies}</li>
+                
                 <li><strong>Interests:</strong> {lifestyle.interests}</li>
                 <li><strong>Food Preference:</strong> {lifestyle.food}</li>
               </ul>
@@ -970,7 +971,7 @@ function App() {
               <div className="bg-rose-100 text-gray-900 font-semibold px-4 py-3 rounded-t w-full flex items-center justify-between">
                 <span>Contact Details</span>
                 <a
-                  href={`https://wa.me/${contact.self}?text=Hello%2C%20I%20just%20went%20through%20your%20matrimonial%20biodata%20and%20would%20like%20to%20connect.%20When%20would%20be%20a%20convenient%20time%20for%20us%20to%20talk%3F`}
+                  href={`https://wa.me/${contact.self}?text=Hello%20Soumya%2C%0AI%20just%20went%20through%20your%20matrimonial%20biodata%20and%20would%20love%20to%20connect.%20When%20would%20be%20a%20convenient%20time%20to%20talk%3F`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-green-600 hover:text-green-700"
