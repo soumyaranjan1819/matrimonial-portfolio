@@ -100,7 +100,7 @@ function ImageWithSkeleton({ src, alt = '', className = '', imageClassName = '' 
           'h-full w-full ' +
           (imageClassName || 'object-cover') +
           (loaded ? '' : ' opacity-0') +
-          ' relative z-10'
+          ' relative z-5'
         }
         onLoad={() => setLoaded(true)}
         /*
@@ -867,10 +867,10 @@ function App() {
         ॐ श्री गणपतये नमः
       </header>
       {/* Content area with increased top and bottom padding */}
-      <div className="pt-24 pb-7 px-4 max-w-7xl mx-auto">
+      <div className="pt-20 pb-7 px-4 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row gap-2">
           {/* Left column */}
-          <aside className="md:w-1/4 w-full flex flex-col gap-2">
+          <aside className="w-full md:w-1/4 flex flex-col gap-2 md:sticky md:top-24 self-start">
             <ProfileCard
               name={profile.name}
               onViewAlbum={() => openAlbum(0)}
@@ -880,6 +880,7 @@ function App() {
             />
             <BasicDetailsCard details={basic} />
           </aside>
+
           {/* Middle scrollable column */}
           <main className="md:w-1/2 w-full flex flex-col gap-2 md:flex-grow md:overflow-y-auto no-scrollbar pr-2">
             {/* About Me section with expandable view.  By default only
@@ -994,7 +995,7 @@ function App() {
             </div>
           </main>
           {/* Right column: album grid (hidden on mobile) */}
-          <aside id="album-grid" className="md:w-1/4 hidden md:block">
+          <aside id="album-grid" className="md:w-1/4 hidden md:block sticky top-24 self-start">
             <AlbumGrid images={images} onSelect={(idx) => openAlbum(idx)} />
           </aside>
         </div>
