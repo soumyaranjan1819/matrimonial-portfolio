@@ -732,7 +732,7 @@ function App() {
     community: 'Hindu, Brahmin – Halua',
     // Rasi and diet have been removed as per the latest instructions.
     gotra: 'Kashyap',
-    location: 'Bengaluru',
+    location: 'Bhubaneswar',
     bloodGroup: 'B+'
   };
   const aboutMe = `Hello! I'm Soumya Ranjan Behera. I completed my B.Tech from ITER and currently work as a software engineer. I enjoy exploring new technologies, travelling to new places, reading books and spending quality time with family. I believe in balancing tradition and modern values and I'm looking for a partner who shares a similar outlook on life.`;
@@ -788,8 +788,8 @@ function App() {
   // sorted by filename.
   const images = [
     'assets/IMG_01.jpg',
-    'assets/IMG_03.jpg',
     'assets/IMG_02.jpg',
+    'assets/IMG_03.jpg',
     'assets/IMG_04.jpg',
     'assets/IMG_05.jpg',
     'assets/IMG_10.jpg',
@@ -953,12 +953,13 @@ function App() {
                   <a
                     href="assets/kundli.pdf"
                     target="_blank"
+                    className="inline-flex flex-col items-center text-center"
                     rel="noopener noreferrer"
                   >
                     <ImageWithSkeleton
                       src="assets/kundli_view.png"
                       alt="Kundli Chart"
-                      className="w-20 h-auto"
+                      className="pl-2 w-16 h-auto"
                       imageClassName="object-contain"
                     />
                     <span className="text-rose-400 hover:text-rose-500 text-sm font-medium mt-2">View Kundli</span>
