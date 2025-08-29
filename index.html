@@ -169,10 +169,10 @@ function ProfileCard({ name, onViewAlbum, onViewProfile, onOpenKundli, profileIm
             e.preventDefault();
             onViewAlbum && onViewAlbum();
           }}
-          className="text-rose-400 text-sm font-medium flex items-center gap-1 hover:underline focus:outline-none"
+          className="text-rose-400 text-sm font-medium flex items-center gap-1 hover:text-rose-500 focus:outline-none"
         >
           <span>View album</span>
-          <span aria-hidden="true">📷</span>
+          <span className="pb-1" aria-hidden="true">📷</span>
         </button>
       </div>
     </div>
@@ -868,9 +868,9 @@ function App() {
       </header>
       {/* Content area with increased top and bottom padding */}
       <div className="pt-20 pb-7 px-4 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row gap-2">
+        <div className="flex flex-col md:flex-row gap-2 md: gap-3">
           {/* Left column */}
-          <aside className="w-full md:w-1/4 flex flex-col gap-2 md:sticky md:top-24 self-start">
+          <aside className="w-full md:w-1/4 flex flex-col gap-2 md:sticky md:top-20 pt-2 self-start">
             <ProfileCard
               name={profile.name}
               onViewAlbum={() => openAlbum(0)}
@@ -882,7 +882,7 @@ function App() {
           </aside>
 
           {/* Middle scrollable column */}
-          <main className="md:w-1/2 w-full flex flex-col gap-2 md:flex-grow md:overflow-y-auto no-scrollbar pr-2">
+          <main className="md:w-1/2 w-full flex flex-col gap-2 md:flex-grow md:overflow-y-auto no-scrollbar">
             {/* About Me section with expandable view.  By default only
               the first paragraph is shown.  Clicking “View more”
               reveals the second paragraph.  Once expanded the
@@ -996,7 +996,7 @@ function App() {
             </div>
           </main>
           {/* Right column: album grid (hidden on mobile) */}
-          <aside id="album-grid" className="md:w-1/4 hidden md:block sticky top-24 self-start">
+          <aside id="album-grid" className="md:w-1/4 hidden md:block sticky top-20 self-start">
             <AlbumGrid images={images} onSelect={(idx) => openAlbum(idx)} />
           </aside>
         </div>
