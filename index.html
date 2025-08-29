@@ -381,7 +381,7 @@ function AlbumModal({ isOpen, images, currentIndex, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
       {mode === 'single' ? (
-        <div className="relative max-w-4xl w-full max-h-[80vh] bg-white rounded-lg flex flex-col">
+        <div className="relative max-w-[30vw] max-h-[80vh] bg-white rounded-lg flex flex-col">
           {/* Header: centre the photo counter and align actions to the right. */}
           <div className="flex items-center bg-rose-100 px-4 py-2 rounded-t-lg">
             <span className="flex-1 text-center text-gray-600 font-medium text-sm">
@@ -408,7 +408,7 @@ function AlbumModal({ isOpen, images, currentIndex, onClose }) {
           <div className="flex-1 relative flex items-center justify-center p-0">
             <button
               onClick={handlePrev}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-rose-50/60 text-gray-700 rounded-full p-2 hover:bg-rose-100 z-20"
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-gray-100/65 text-gray-700 rounded-full p-1 hover:bg-gray-100 z-20"
               aria-label="Previous"
             >
               {ChevronLeftIcon}
@@ -417,13 +417,13 @@ function AlbumModal({ isOpen, images, currentIndex, onClose }) {
               <ImageWithSkeleton
                 src={images[index]}
                 alt={`Album ${index + 1}`}
-                className="max-h-[70vh] max-w-full"
+                className="max-h-[72.5vh] max-w-full"
                 imageClassName="object-contain"
               />
             </div>
             <button
               onClick={handleNext}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-rose-50/60 text-gray-700 rounded-full p-2 hover:bg-rose-100 z-20"
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-gray-100/65 text-gray-700 rounded-full p-1 hover:bg-gray-100 z-20"
               aria-label="Next"
             >
               {ChevronRightIcon}
@@ -454,7 +454,7 @@ function AlbumModal({ isOpen, images, currentIndex, onClose }) {
             {images.map((src, idx) => (
               <div
                 key={idx}
-                className="w-full h-48 sm:h-56 cursor-pointer"
+                className="w-full h-20 sm:h-48 cursor-pointer"
                 onClick={() => openSingle(idx)}
               >
                 <ImageWithSkeleton
@@ -741,10 +741,7 @@ function App() {
   };
   const aboutMe = `Hello! I'm Soumya Ranjan Behera. I completed my B.Tech from ITER and currently work as a software engineer. I enjoy exploring new technologies, travelling to new places, reading books and spending quality time with family. I believe in balancing tradition and modern values and I'm looking for a partner who shares a similar outlook on life.`;
 
-  // Extended about me text provided by the user.  The first
-  // paragraph describes personal qualities and values.  The
-  // second paragraph expresses expectations for a partner and shared
-  // interests.  Only the first paragraph is shown by default; the
+  // Only the first paragraph is shown by default; the
   // second is revealed when the user clicks “View more”.
   const aboutMePart1 =
     'I am an ambitious, mature, and understanding individual who values simplicity, honesty, and strong family bonds. I believe in balancing aspirations with responsibilities while striving for personal and professional growth.';
@@ -770,9 +767,9 @@ function App() {
     location: 'Benguluru',
   };
   const lifestyle = {
-    hobbies: 'Reading, Travelling, Music.',
-    interests: 'Gardening, Tavelling.',
-    food: 'Authentic Odia cuisine, light less oily & mildly spiced and non-vegetarian.'
+    hobbies: 'Reading',
+    interests: 'Gardening, Tavelling,',
+    food: 'Authentic Odia cuisine, Healthy snacking non-vegetarian.'
   };
   const kundli = {
     rasi: 'Mesh (Aries)',
@@ -1024,7 +1021,7 @@ function App() {
       />
 
       {/* Footer / watermark */}
-      {/* Decrease the top margin on the footer to reduce the gap by roughly 40% (mt-2 → mt-1) */}
+      
       <footer className="py-4 text-center mt-1 px-4">
         <p className="text-gray-600 text-base font-semibold">Crafted with ❤ for a new beginning 👨🏻‍🤝‍👩🏻</p>
         <p className="text-gray-500 text-sm mt-1">Designed &amp; Developed by <span className="font-medium">Soumya</span></p>
