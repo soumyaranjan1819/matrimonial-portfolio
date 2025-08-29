@@ -381,7 +381,7 @@ function AlbumModal({ isOpen, images, currentIndex, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
       {mode === 'single' ? (
-        <div className="relative max-w-[30vw] max-h-[80vh] bg-white rounded-lg flex flex-col">
+        <div className="relative max-w-4xl w-full max-h-[80vh] bg-white rounded-lg flex flex-col">
           {/* Header: centre the photo counter and align actions to the right. */}
           <div className="flex items-center bg-rose-100 px-4 py-2 rounded-t-lg">
             <span className="flex-1 text-center text-gray-600 font-medium text-sm">
@@ -417,7 +417,7 @@ function AlbumModal({ isOpen, images, currentIndex, onClose }) {
               <ImageWithSkeleton
                 src={images[index]}
                 alt={`Album ${index + 1}`}
-                className="max-h-[72.5vh] max-w-full"
+                className="max-h-[70vh] max-w-full"
                 imageClassName="object-contain"
               />
             </div>
@@ -454,7 +454,7 @@ function AlbumModal({ isOpen, images, currentIndex, onClose }) {
             {images.map((src, idx) => (
               <div
                 key={idx}
-                className="w-full h-20 sm:h-48 cursor-pointer"
+                className="w-full h-48 sm:h-56 cursor-pointer"
                 onClick={() => openSingle(idx)}
               >
                 <ImageWithSkeleton
