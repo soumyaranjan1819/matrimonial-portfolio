@@ -121,22 +121,7 @@ function ImageWithSkeleton({ src, alt = '', className = '', imageClassName = '' 
 function ProfileCard({ name, onViewAlbum, onViewProfile, onOpenKundli, profileImage }) {
   return (
     <div className="bg-white rounded-lg shadow p-4 flex flex-row z-5 md:flex-col items-center gap-4 relative">
-      {/* Astrology icon at top right */}
-      <button
-        className="absolute top-2 right-2"
-        onClick={(e) => {
-          e.stopPropagation();
-          if (onOpenKundli) onOpenKundli();
-        }}
-        aria-label="Match kundli"
-      >
-        {/* Astrology icon */}
-        <img
-          src="assets/kundli_icon.png"
-          alt="Kundli icon"
-          className="h-8 w-8 object-contain"
-        />
-      </button>
+      {/* Astrology icon at top right, will add the button here in future*/}
       <div
         className="flex-shrink-0 h-28 w-28 rounded-full overflow-hidden cursor-pointer"
         onClick={() => {
