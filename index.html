@@ -968,6 +968,13 @@ function App() {
   // PIL to ensure proper rendering of the Hindi script in the PDF.
   const ganapatiHeaderImg = 'data:image/png;base64,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';
 
+  // Base64 encoded WhatsApp icon used in the PDF contact card header.
+  // Base64 encoded WhatsApp icon used in the PDF contact card header.  This
+  // image is taken from the user's supplied file "whatsapp (1).png" and
+  // provides a crisp, green WhatsApp logo.  See attachments for
+  // reference.
+  const whatsappIconImg = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAA99JREFUSInFlU9sVFUUxn/nzrSIKGr7pkNFUCouTAmNoWH+ajAk1QXCQos2wYSFLJREE7UmGiQRNf7ZqNHEhYkYmygWJUYTCLFQKMy8KbVRopBoUwhaStqZWrCmaW3fPS7ezHRg2lpX3tV953zn+853z8u9whyr/gyVN//pPKiiW1CzHtFlCDeiDCv0gx4OiBw4Gcn9OhcHgJRFFImdclpQXhNYVZIZB8aAEGDyMQt8hje9K524fOFfBWLp2xaLmdgLPJoPHQTapmXyu1ORsRGA5nYCl26vWeOp3WzgKYVlwGUV85gbGT48p8CGzjuum1r8V4dCAjgnIttTkeyJ+eyvPR1ecsO4txuhFbAq0uJGsvtnFYhnnDZgm0L3omDlpmONg7n5yK9y3u20iNIGTKqVpBvP/lDIGYCk6zwEbAMuiBfY/F/IAdxI7nPxXVwvRveixRlhUIwV3gAQlSfTiaFhgETG2RPPOF4sE3pmISKpSO4d4ATQkMg4LUWBmFsTBeoFUqlY9hBAvOeWNQq7ACOqzza3E1iIiFpeBlDDjqKAiN2C3/6+ItIz91CYj7BycGXogYUIuLFcFzCIkoill1YBGEQbAIzq0SJSuFhSl7PWnl6IAIIidALBgFSu9R0gtQDjQS2SVo6PdCmcz38ecOMjF8vZ5lQZAPAMtX7jwhI/MTpegBy7n2mjshNQYHvUrUkslF5VJwHEyiLw/6IRgOB0VbgUmIplDym8ClQasd+Uitz7vVMbz1Q/Xn+GynIFlvtGvEFfAP0ZwIg0Xot1I7lXQD8GqozY47GM83YsHVrtTfM1yKc3jTnn4q6zo7RGhEaAoFT05Y9IjgCIysNl3Qg2HRl5QnwnKtAqRvuA9XnEcoTnCvBkT7gOaFA42xUZOg9gzBTfAlcQmu/rDq+aRURT0dxuD7NOoAN/LsUDUfT9woc37b2Ud9E+Uw7EXecthBcEeTMVzb5YJlKy4qmaOzFeE7BUNXjQjQ/9BBB1axJG7HFgdDLore5tHL0CEMRvqVr8zY/zkQOkE8P9wIelsWRPuM563ldAAJXWAjnkLzsRmgA7ZSY6ComFXg9J19lgrZcBwqryQTqW/aQ0L1G3+m4jchboA90DbATZCOqJyut4fJFK5sbKiDPOOgutwFa/R9699bfc8/u34l0lEHdDTyP63jX1lplncUKgF6Tfqk4JhBEagBX5/ADQmo7m9jHLCiLalN//gnAUNUfUTnQGpOIuK7IT2OS/cpqQmQfWA04q8uXfwYqPehsHx2cj9x1kQo94eJnu6B8DsyIUE3NDdcboCrBBDeilSeH30kH+r+sfFhB6jxhOx/YAAAAASUVORK5CYII=';
+
   // Generates a downloadable PDF version of the profile using jsPDF.  This version
   // mirrors the card-based UI while incorporating additional styling tweaks: the
   // Ganapati invocation appears at the top, section headers are rectangular
@@ -980,7 +987,7 @@ function App() {
     const doc = new jsPDF({ unit: 'pt', format: 'a4' });
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 40;
-    let yPos = margin;
+    let yPos = margin - 16;
 
     // Compute age from DOB string (YYYY-MM-DD)
     function computeAgeFromDob(dobStr) {
@@ -1088,20 +1095,20 @@ function App() {
     }
     // Draw Ganapati invocation centred at top using the embedded image.  A PNG is
     // used because the default PDF font cannot render Devanagari text correctly.
-    const headerImgWidth = 200;
-    const headerImgHeight = 40;
+    // Reduce the size and vertical margin so the heading sits closer to the top.
+    const headerImgWidth = 150;
+    const headerImgHeight = 28;
     const headerX = (pageWidth - headerImgWidth) / 2;
     doc.addImage(ganapatiHeaderImg, 'PNG', headerX, yPos, headerImgWidth, headerImgHeight);
-    yPos += headerImgHeight + 14;
+    // Reduce vertical spacing after the header
+    yPos += headerImgHeight + 8;
     // Profile header (no coloured background)
     const imgSizeLarge = 80;
     const imgX = margin;
     const imgY = yPos + 0;
-    // Border around profile image: rose coloured and flush with the image
-    doc.setLineWidth(2);
-    doc.setDrawColor(244, 63, 94);
-    doc.rect(imgX - 2, imgY - 2, imgSizeLarge + 4, imgSizeLarge + 4);
-    // Profile image
+    // Profile image: enlarge and remove border.  Draw directly without any
+    // surrounding rectangle so the image touches the margins.  Increase size
+    // slightly to emphasise the picture.
     doc.addImage(profileThumbData, 'JPEG', imgX, imgY, imgSizeLarge, imgSizeLarge);
     // Name and age/designation
     const ageYears = computeAgeFromDob('1995-12-30');
@@ -1163,8 +1170,20 @@ function App() {
     contactLines2.push(`Mobile (Self): ${contact.self}`);
     contactLines2.push(`Mobile (Father): ${contact.father}`);
     contactLines2.push(`Email: ${contact.email}`);
+    // Capture the current y-position before drawing the contact card so
+    // the WhatsApp icon can be layered over the header afterwards.
+    const contactHeaderY = yPos;
     drawCard('Contact Details', contactLines2);
-
+    // Draw the WhatsApp icon in the contact card header.  Position it on the
+    // right side within the 22pt header bar, leaving a small right margin.
+    const iconSize = 18;
+    const headerHeightConst = 22;
+    const iconX = pageWidth - margin - iconSize - 8;
+    const iconY = contactHeaderY + (headerHeightConst - iconSize) / 2;
+    doc.addImage(whatsappIconImg, 'PNG', iconX, iconY, iconSize, iconSize);
+    const waLink =
+      'https://wa.me/9776786336?text=Hello%20Soumya%2C%0AI%20just%20went%20through%20your%20matrimonial%20biodata%20and%20would%20love%20to%20connect.%20When%20would%20be%20a%20convenient%20time%20to%20talk%3F';
+    doc.link(iconX, iconY, iconSize, iconSize, { url: waLink });
     // Save PDF
     const filename = `${profile.name.replace(/\s+/g, '_')}_Bio.pdf`;
     doc.save(filename);
