@@ -30,6 +30,12 @@
     -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+    <!-- jsPDF library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- jsPDF library for generating PDF downloads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <!-- Custom styles to hide scrollbars on elements with the no-scrollbar class -->
     <style>
       /* Hide scrollbar for Chrome, Safari and Opera */
@@ -783,6 +789,115 @@ function App() {
     'assets/IMG_09.jpg',
   ];
 
+  // Base64 encoded thumbnail of the profile picture for embedding in the PDF.  This
+  // thumbnail is a smaller version of IMG_01.jpg to keep the PDF size reasonable.
+  const profileThumbData = 'data:image/jpeg;base64,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';
+
+  // Generates a downloadable PDF version of the profile using jsPDF.  The
+  // PDF replicates the card-based UI: each section is drawn inside a
+  // rounded rectangle with a rose header bar matching the web layout.  The
+  // profile photo is shown next to the name at the top along with a View
+  // Album link pointing to the provided Google Drive folder.  About Me and
+  // Album sections are intentionally omitted from the PDF.
+  const generateBioPDF2 = () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 40;
+    let y = margin;
+    function drawCard(title, lines) {
+      const headerHeight = 22;
+      // Increase line height slightly to give extra spacing between lines
+      const lineHeight = 15;
+      const bodyHeight = lines.reduce((h, ln) => {
+        const split = doc.splitTextToSize(ln, pageWidth - 2 * margin - 16);
+        return h + split.length * lineHeight;
+      }, 0) + 16;
+      const cardHeight = headerHeight + bodyHeight;
+      doc.setFillColor(254, 226, 226);
+      doc.roundedRect(margin, y, pageWidth - 2 * margin, headerHeight, 6, 6, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.setTextColor(31, 41, 55);
+      doc.text(title, margin + 8, y + headerHeight - 6);
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(margin, y + headerHeight, pageWidth - 2 * margin, bodyHeight, 6, 6, 'F');
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(55, 65, 81);
+      let yy = y + headerHeight + 14;
+      lines.forEach((ln) => {
+        const split = doc.splitTextToSize(ln, pageWidth - 2 * margin - 16);
+        split.forEach((s) => {
+          doc.text(s, margin + 8, yy);
+          yy += lineHeight;
+        });
+      });
+      y += cardHeight + 12;
+    }
+    // Header section
+    const headerHeight = 80;
+    doc.setFillColor(254, 226, 226);
+    doc.roundedRect(margin, y, pageWidth - 2 * margin, headerHeight, 6, 6, 'F');
+    const imgSize = 60;
+    doc.addImage(profileThumbData, 'JPEG', margin + 12, y + 10, imgSize, imgSize);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(31, 41, 55);
+    doc.text(profile.name, margin + 12 + imgSize + 12, y + 30);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(244, 63, 94);
+    doc.textWithLink('View album', margin + 12 + imgSize + 12, y + 50, { url: 'https://drive.google.com/drive/u/0/folders/1OcxzhxejRn00R50TXAyBhoxEoDv-N17m' });
+    y += headerHeight + 12;
+    // Basic Info card
+    const basicLines = [];
+    if (basic.age) basicLines.push(`Age: ${basic.age}`);
+    basicLines.push(`Height: ${basic.height}`);
+    basicLines.push(`Community: ${basic.community}`);
+    if (basic.gotra) basicLines.push(`Gotra: ${basic.gotra}`);
+    if (basic.location) basicLines.push(`Location: ${basic.location}`);
+    basicLines.push(`Blood Group: ${basic.bloodGroup}`);
+    drawCard('Basic Info', basicLines);
+    // Family card
+    const familyLines = [];
+    familyLines.push(`Parents: Father is ${family.fatherOccupation}, Mother is currently working as a ${family.motherOccupation}.`);
+    familyLines.push('Siblings: 1 younger brother (Unmarried), working in Benguluru.');
+    familyLines.push('We are a close-knit and progressive family from Keonjhar, with plans to settle in Bhubaneswar by mid-2026.');
+    drawCard('Family', familyLines);
+    // Career & Education card
+    const careerLines = [];
+    careerLines.push(`Degree: ${career.degree}`);
+    careerLines.push(`Institute: ${career.institute}`);
+    careerLines.push(`Profession: ${career.profession} at ${career.company}`);
+    careerLines.push(`Location: ${career.location}`);
+    drawCard('Career & Education', careerLines);
+    // Lifestyle & Interests card
+    const lifestyleLines = [];
+    lifestyleLines.push(`Hobbies: ${lifestyle.hobbies}`);
+    lifestyleLines.push(`Interests: ${lifestyle.interests}`);
+    lifestyleLines.push(`Food Preference: ${lifestyle.food}`);
+    drawCard('Lifestyle & Interests', lifestyleLines);
+    // Kundli & Astro card
+    const kundliLines = [];
+    kundliLines.push(`DOB: ${kundli.dob}`);
+    kundliLines.push(`Birth Time: ${kundli.birthTime}`);
+    kundliLines.push(`Birth Place: ${kundli.birthPlace}`);
+    kundliLines.push(`Rasi: ${kundli.rasi}`);
+    kundliLines.push(`Nakshatra: ${kundli.nakshatra}`);
+    kundliLines.push(`Manglik: ${kundli.manglik}`);
+    drawCard('Kundli & Astro', kundliLines);
+    // Contact card
+    const contactLines = [];
+    contactLines.push(`Mobile (Self): ${contact.self}`);
+    contactLines.push(`Mobile (Father): ${contact.father}`);
+    contactLines.push(`Email: ${contact.email}`);
+    drawCard('Contact Details', contactLines);
+    const filename = `${profile.name.replace(/\s+/g, '_')}_Bio.pdf`;
+    doc.save(filename);
+  };
+
+
   // State for controlling the album modal.  albumOpen toggles the
   // visibility; albumIndex stores the currently selected image index.
   const [albumOpen, setAlbumOpen] = React.useState(false);
@@ -845,6 +960,216 @@ function App() {
     setAlbumOpen(false);
   };
 
+  // Base64 encoded thumbnail of the profile picture for embedding in the PDF.  This
+  // thumbnail is a downscaled version of IMG_01.jpg to keep the PDF file size manageable.
+  const profileThumbData2 = 'data:image/jpeg;base64,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';
+
+  // Base64 encoded PNG containing the Devanagari invocation used in the PDF header.  Generated via
+  // PIL to ensure proper rendering of the Hindi script in the PDF.
+  const ganapatiHeaderImg = 'data:image/png;base64,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';
+
+  // Generates a downloadable PDF version of the profile using jsPDF.  This version
+  // mirrors the card-based UI while incorporating additional styling tweaks: the
+  // Ganapati invocation appears at the top, section headers are rectangular
+  // (not rounded), the profile card has no coloured background, and the
+  // profile image is larger with a thin border.  Labels are bold and the
+  // company name in the profession line is italic.  The About Me and Album
+  // sections are intentionally omitted.
+  const generateBioPDF = () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 40;
+    let yPos = margin;
+
+    // Compute age from DOB string (YYYY-MM-DD)
+    function computeAgeFromDob(dobStr) {
+      const dobDate = new Date(dobStr);
+      const today = new Date();
+      let age = today.getFullYear() - dobDate.getFullYear();
+      const m = today.getMonth() - dobDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < dobDate.getDate())) {
+        age--;
+      }
+      return age;
+    }
+    // Draw a card with rectangular header and bold labels.  Lines are
+    // provided as strings in the format "Label: value".  For the
+    // Profession line the company portion after " at " is rendered
+    // italic.  Multi‑line wrapping is handled with explicit splits.
+    function drawCard(title, lines) {
+      const headerHeight = 22;
+      const lineHeight = 15;
+      // Estimate body height: one lineHeight per line, plus extra for
+      // wrapped values.  Since we manually wrap values, bodyHeight is
+      // incremented accordingly during rendering.
+      let bodyHeight = 16 + lines.length * lineHeight;
+      // Draw header background (solid rose) without rounded corners
+      doc.setFillColor(254, 226, 226);
+      doc.rect(margin, yPos, pageWidth - 2 * margin, headerHeight, 'F');
+      // Header text
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.setTextColor(31, 41, 55);
+      doc.text(title, margin + 8, yPos + headerHeight - 6);
+      // Draw body background (white)
+      doc.setFillColor(255, 255, 255);
+      doc.rect(margin, yPos + headerHeight, pageWidth - 2 * margin, bodyHeight, 'F');
+      // Body text rendering
+      let textY = yPos + headerHeight + 14;
+      lines.forEach((ln) => {
+        // Split label and value at first colon
+        const idx = ln.indexOf(':');
+        if (idx > -1) {
+          const label = ln.slice(0, idx).trim();
+          let value = ln.slice(idx + 1).trim();
+          // Special handling for Profession line: italicise company
+          let italicsStart = null;
+          let italicsText = '';
+          let hasAt = false;
+          if (label.toLowerCase() === 'profession' && value.toLowerCase().includes(' at ')) {
+            const parts = value.split(/ at /i);
+            value = parts[0].trim();
+            italicsStart = value;
+            italicsText = parts.slice(1).join(' at ').trim();
+            hasAt = true;
+          }
+          // Measure label width
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(10);
+          const labelWidth = doc.getTextWidth(label + ':');
+          // Render label
+          doc.setTextColor(31, 41, 55);
+          doc.text(label + ':', margin + 8, textY);
+          // Render value (normal)
+          let xVal = margin + 8 + labelWidth + 4;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(10);
+          doc.setTextColor(55, 65, 81);
+          // If profession line with italics
+          if (italicsStart !== null) {
+            // Render profession and the word "at" in normal font
+            const beforeText = hasAt ? value + ' at ' : value;
+            doc.text(beforeText, xVal, textY, { maxWidth: pageWidth - 2 * margin - 16 });
+            const beforeWidth = doc.getTextWidth(beforeText);
+            // Render italic company name
+            doc.setFont('helvetica', 'italic');
+            const companyVal = italicsText;
+            doc.text(companyVal, xVal + beforeWidth, textY, { maxWidth: pageWidth - 2 * margin - 16 - beforeWidth });
+            // Reset font to normal after italic
+            doc.setFont('helvetica', 'normal');
+          } else {
+            // Normal value
+            // Split long value into multiple lines if necessary
+            const maxValWidth = pageWidth - 2 * margin - 16 - labelWidth - 4;
+            const splits = doc.splitTextToSize(value, maxValWidth);
+            splits.forEach((s, idx2) => {
+              if (idx2 === 0) {
+                doc.text(s, xVal, textY);
+              } else {
+                // wrap to next line aligned with label start
+                textY += lineHeight;
+                doc.text(s, margin + 8, textY);
+              }
+            });
+          }
+          textY += lineHeight;
+        } else {
+          // No label/value pattern
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(10);
+          doc.setTextColor(55, 65, 81);
+          doc.text(ln, margin + 8, textY, { maxWidth: pageWidth - 2 * margin - 16 });
+          textY += lineHeight;
+        }
+      });
+      // Reduce gap between sections to tighten layout
+      yPos += headerHeight + bodyHeight + 8;
+    }
+    // Draw Ganapati invocation centred at top using the embedded image.  A PNG is
+    // used because the default PDF font cannot render Devanagari text correctly.
+    const headerImgWidth = 200;
+    const headerImgHeight = 40;
+    const headerX = (pageWidth - headerImgWidth) / 2;
+    doc.addImage(ganapatiHeaderImg, 'PNG', headerX, yPos, headerImgWidth, headerImgHeight);
+    yPos += headerImgHeight + 14;
+    // Profile header (no coloured background)
+    const imgSizeLarge = 80;
+    const imgX = margin;
+    const imgY = yPos + 0;
+    // Border around profile image: rose coloured and flush with the image
+    doc.setLineWidth(2);
+    doc.setDrawColor(244, 63, 94);
+    doc.rect(imgX - 2, imgY - 2, imgSizeLarge + 4, imgSizeLarge + 4);
+    // Profile image
+    doc.addImage(profileThumbData, 'JPEG', imgX, imgY, imgSizeLarge, imgSizeLarge);
+    // Name and age/designation
+    const ageYears = computeAgeFromDob('1995-12-30');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(31, 41, 55);
+    doc.text(profile.name, imgX + imgSizeLarge + 16, imgY + 24);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(55, 65, 81);
+    // Use the user‑requested designation; fallback to profession if provided
+    const designation = career.profession ? career.profession : 'Senior Software Developer';
+    doc.text(`${ageYears} Yrs, ${designation}`, imgX + imgSizeLarge + 16, imgY + 40);
+    // View Album link below name
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(244, 63, 94);
+    doc.textWithLink('View album', imgX + imgSizeLarge + 16, imgY + 56, { url: 'https://drive.google.com/drive/u/0/folders/1OcxzhxejRn00R50TXAyBhoxEoDv-N17m' });
+    // Update yPos after profile section
+    yPos += imgSizeLarge + 24;
+    // Basic info lines: use DOB instead of Age
+    const basicLines2 = [];
+    basicLines2.push(`DOB: ${kundli.dob}`);
+    basicLines2.push(`Height: ${basic.height}`);
+    basicLines2.push(`Community: ${basic.community}`);
+    if (basic.gotra) basicLines2.push(`Gotra: ${basic.gotra}`);
+    if (basic.location) basicLines2.push(`Location: ${basic.location}`);
+    basicLines2.push(`Blood Group: ${basic.bloodGroup}`);
+    drawCard('Basic Info', basicLines2);
+    // Family section
+    const familyLines2 = [];
+    familyLines2.push(`Parents: Father is ${family.fatherOccupation}, Mother is currently working as a ${family.motherOccupation}.`);
+    familyLines2.push('Siblings: 1 younger brother (Unmarried), working in Benguluru.');
+    familyLines2.push('We are a close-knit and progressive family from Keonjhar, with plans to settle in Bhubaneswar by mid-2026.');
+    drawCard('Family', familyLines2);
+    // Career & Education section
+    const careerLines2 = [];
+    careerLines2.push(`Degree: ${career.degree}`);
+    careerLines2.push(`Institute: ${career.institute}`);
+    careerLines2.push(`Profession: ${career.profession} at ${career.company}`);
+    careerLines2.push(`Location: ${career.location}`);
+    drawCard('Career & Education', careerLines2);
+    // Lifestyle & Interests section
+    const lifestyleLines2 = [];
+    lifestyleLines2.push(`Hobbies: ${lifestyle.hobbies}`);
+    lifestyleLines2.push(`Interests: ${lifestyle.interests}`);
+    lifestyleLines2.push(`Food Preference: ${lifestyle.food}`);
+    drawCard('Lifestyle & Interests', lifestyleLines2);
+    // Kundli & Astro section
+    const kundliLines2 = [];
+    kundliLines2.push(`Birth Time: ${kundli.birthTime}`);
+    kundliLines2.push(`Birth Place: ${kundli.birthPlace}`);
+    kundliLines2.push(`Rasi: ${kundli.rasi}`);
+    kundliLines2.push(`Nakshatra: ${kundli.nakshatra}`);
+    kundliLines2.push(`Manglik: ${kundli.manglik}`);
+    drawCard('Kundli & Astro', kundliLines2);
+    // Contact Details section
+    const contactLines2 = [];
+    contactLines2.push(`Mobile (Self): ${contact.self}`);
+    contactLines2.push(`Mobile (Father): ${contact.father}`);
+    contactLines2.push(`Email: ${contact.email}`);
+    drawCard('Contact Details', contactLines2);
+
+    // Save PDF
+    const filename = `${profile.name.replace(/\s+/g, '_')}_Bio.pdf`;
+    doc.save(filename);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Fixed header */}
@@ -899,9 +1224,11 @@ function App() {
               </div>
               <ul className="space-y-2">
                 <li className="flex items-center gap-2">
+                  <span className="text-lg">🧑🏻‍🧑🏻‍🧒🏻</span>
                   <span><span className="font-semibold">Parents:</span> Father is {family.fatherOccupation} &amp; Mother is currently working as a {family.motherOccupation}.</span>
                 </li>
                 <li className="flex items-center gap-2">
+                  <span className="text-lg">👨🏻‍🤝‍👩🏻</span>
                   <span><span className="font-semibold">Siblings:</span> 1 younger brother (Unmarried), working in Benguluru.</span>
                 </li>
               </ul>
@@ -923,8 +1250,8 @@ function App() {
               </ul>
             </SectionCard>
             <SectionCard title="Kundli & Astro">
-              {/* Show details and preview side by side on all screens.  The flex layout wraps if space is limited. */}
-              <div className="flex flex-row flex-wrap gap-4">
+              {/* Display kundli details and preview side by side even on small screens. */}
+              <div className="flex flex-row gap-4 items-start">
                 <ul className="space-y-2 flex-1 min-w-[60%]">
                   <li><strong>DOB:</strong> {kundli.dob}</li>
                   <li><strong>Birth Time:</strong> {kundli.birthTime}</li>
@@ -977,8 +1304,17 @@ function App() {
                   <li><strong>Mobile (Father):</strong> {contact.father}</li>
                   <li><strong>Email:</strong> {contact.email}</li>
                 </ul>
-              </div>
-            </div>
+                </div>
+                </div>
+                {/* Download PDF button */}
+                <div className="mt-2 rounded-lg shadow flex justify-center">
+                  <button
+                    onClick={generateBioPDF}
+                    className="bg-rose-400 hover:bg-rose-500 text-white text-sm font-medium px-4 py-2 rounded w-full"
+                  >
+                    Download Bio as PDF
+                  </button>
+                </div>
           </main>
           {/* Right column: album grid (hidden on mobile) */}
           <aside id="album-grid" className="md:w-1/4 hidden md:block sticky top-20 self-start">
