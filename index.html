@@ -885,7 +885,6 @@ function App() {
     kundliLines.push(`Birth Place: ${kundli.birthPlace}`);
     kundliLines.push(`Rasi: ${kundli.rasi}`);
     kundliLines.push(`Nakshatra: ${kundli.nakshatra}`);
-    kundliLines.push(`Manglik: ${kundli.manglik}`);
     drawCard('Kundli & Astro', kundliLines);
     // Contact card
     const contactLines = [];
@@ -1159,11 +1158,11 @@ function App() {
     drawCard('Lifestyle & Interests', lifestyleLines2);
     // Kundli & Astro section
     const kundliLines2 = [];
+    kundliLines2.push(`DOB: ${kundli.dob}`);
     kundliLines2.push(`Birth Time: ${kundli.birthTime}`);
     kundliLines2.push(`Birth Place: ${kundli.birthPlace}`);
     kundliLines2.push(`Rasi: ${kundli.rasi}`);
     kundliLines2.push(`Nakshatra: ${kundli.nakshatra}`);
-    kundliLines2.push(`Manglik: ${kundli.manglik}`);
     drawCard('Kundli & Astro', kundliLines2);
     // Contact Details section
     const contactLines2 = [];
@@ -1275,7 +1274,6 @@ function App() {
                   <li><strong>Birth Place:</strong> {kundli.birthPlace}</li>
                   <li><strong>Rasi:</strong> {kundli.rasi}</li>
                   <li><strong>Nakshatra:</strong> {kundli.nakshatra}</li>
-                  <li><strong>Manglik:</strong> {kundli.manglik}</li>
                 </ul>
                 <div className="flex flex-col items-center justify-center flex-shrink-0 ">
                   {/* Kundli preview image.  Clickable to open the PDF.*/}
