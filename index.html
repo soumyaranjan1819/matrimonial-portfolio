@@ -28,7 +28,15 @@
       simple and self‑contained. For a production application you
       should precompile your JS using a bundler like Vite or Webpack.
     -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!--
+      Pinned to Babel 7. The unpkg "latest" tag now serves Babel 8, whose
+      preset-react defaults to the automatic JSX runtime and emits
+      `import { jsx } from "react/jsx-runtime"`. That import breaks a classic
+      (non-module) in-browser script and left the whole page blank. Babel 7
+      defaults to the classic runtime (React.createElement), which works with
+      the React UMD global loaded above.
+    -->
+    <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
 
     <!-- jsPDF library for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -84,7 +92,7 @@ const { useState } = React;
 // `animate-pulse` utility.  When the image fires its onLoad event the
 // skeleton fades out and the actual image becomes visible.  An
 // optional className can be passed in to control sizing.
-function ImageWithSkeleton({ src, alt = '', className = '', imageClassName = '' }) {
+function ImageWithSkeleton({ src, alt = '', className = '', imageClassName = '', imageSizeClassName = 'h-full w-full' }) {
   /*
     Show a grey pulsating placeholder until the image finishes
     loading.  The skeleton is positioned behind the image (z-0)
@@ -103,7 +111,7 @@ function ImageWithSkeleton({ src, alt = '', className = '', imageClassName = '' 
         src={src}
         alt={alt}
         className={
-          'h-full w-full ' +
+          imageSizeClassName + ' ' +
           (imageClassName || 'object-cover') +
           (loaded ? '' : ' opacity-0') +
           ' relative z-5'
@@ -368,7 +376,7 @@ function AlbumModal({ isOpen, images, currentIndex, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
       {mode === 'single' ? (
-        <div className="relative max-w-4xl w-full max-h-[80vh] bg-white rounded-lg flex flex-col">
+        <div className="relative max-w-4xl w-full max-h-[90vh] bg-white rounded-lg flex flex-col overflow-hidden">
           {/* Header: centre the photo counter and align actions to the right. */}
           <div className="flex justify-center w-full items-center bg-rose-100 py-2 rounded-t-lg">
             <span className="flex-1 text-center text-gray-600 font-medium text-sm">
@@ -392,7 +400,7 @@ function AlbumModal({ isOpen, images, currentIndex, onClose }) {
             </div>
           </div>
           {/* Body: image with navigation arrows always visible */}
-          <div className="flex-1 relative flex items-center justify-center p-0">
+          <div className="flex-1 min-h-0 relative flex items-center justify-center p-2 overflow-hidden">
             <button
               onClick={handlePrev}
               className="absolute left-4 top-1/2 -translate-y-1/2 bg-gray-100/65 text-gray-700 rounded-full p-1 hover:bg-gray-100 z-20"
@@ -400,12 +408,13 @@ function AlbumModal({ isOpen, images, currentIndex, onClose }) {
             >
               {ChevronLeftIcon}
             </button>
-            <div className="max-h-[70vh] max-w-full flex items-center justify-center">
+            <div className="w-full flex items-center justify-center">
               <ImageWithSkeleton
                 src={images[index]}
                 alt={`Album ${index + 1}`}
-                className="max-h-[70vh] max-w-full"
-                imageClassName="object-contain"
+                className="w-full flex items-center justify-center"
+                imageSizeClassName=""
+                imageClassName="max-h-[80vh] max-w-full w-auto h-auto object-contain"
               />
             </div>
             <button
@@ -479,7 +488,7 @@ function ProfileModal({ isOpen, onClose, image }) {
   );
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-      <div className="relative max-w-lg w-full max-h-[80vh] bg-rose-50 rounded-lg flex flex-col">
+      <div className="relative max-w-lg w-full max-h-[90vh] bg-rose-50 rounded-lg flex flex-col overflow-hidden">
         {/* Header with close */}
         <div className="flex justify-end items-center bg-rose-100 px-4 py-2 rounded-t-lg">
           <button
@@ -490,13 +499,14 @@ function ProfileModal({ isOpen, onClose, image }) {
             {CloseIcon}
           </button>
         </div>
-        <div className="flex-1 flex items-center justify-center p-6">
+        <div className="flex-1 min-h-0 flex items-center justify-center p-6 overflow-hidden">
           {image ? (
             <ImageWithSkeleton
               src={image}
               alt="Profile"
-              className="max-h-[60vh] max-w-full rounded-full"
-              imageClassName="object-contain rounded-full"
+              className="w-full flex items-center justify-center"
+              imageSizeClassName=""
+              imageClassName="max-h-[70vh] max-w-full w-auto h-auto object-contain rounded-full"
             />
           ) : (
             <div className="h-80 w-80 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
@@ -988,17 +998,6 @@ function App() {
     const margin = 40;
     let yPos = margin - 16;
 
-    // Compute age from DOB string (YYYY-MM-DD)
-    function computeAgeFromDob(dobStr) {
-      const dobDate = new Date(dobStr);
-      const today = new Date();
-      let age = today.getFullYear() - dobDate.getFullYear();
-      const m = today.getMonth() - dobDate.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < dobDate.getDate())) {
-        age--;
-      }
-      return age;
-    }
     // Draw a card with rectangular header and bold labels.  Lines are
     // provided as strings in the format "Label: value".  For the
     // Profession line the company portion after " at " is rendered
@@ -1109,8 +1108,7 @@ function App() {
     // surrounding rectangle so the image touches the margins.  Increase size
     // slightly to emphasise the picture.
     doc.addImage(profileThumbData, 'JPEG', imgX, imgY, imgSizeLarge, imgSizeLarge);
-    // Name and age/designation
-    const ageYears = computeAgeFromDob('1995-12-30');
+    // Name and designation
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(16);
     doc.setTextColor(31, 41, 55);
@@ -1120,7 +1118,7 @@ function App() {
     doc.setTextColor(55, 65, 81);
     // Use the user‑requested designation; fallback to profession if provided
     const designation = career.profession ? career.profession : 'Senior Software Developer';
-    doc.text(`${ageYears} Yrs, ${designation}`, imgX + imgSizeLarge + 16, imgY + 40);
+    doc.text(designation, imgX + imgSizeLarge + 16, imgY + 40);
     // View Album link below name
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
@@ -1148,6 +1146,7 @@ function App() {
     careerLines2.push(`Degree: ${career.degree}`);
     careerLines2.push(`Institute: ${career.institute}`);
     careerLines2.push(`Profession: ${career.profession} at ${career.company}`);
+    careerLines2.push('Package: 12.5 LPA');
     careerLines2.push(`Location: ${career.location}`);
     drawCard('Career & Education', careerLines2);
     // Lifestyle & Interests section
